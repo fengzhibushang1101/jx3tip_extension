@@ -3,21 +3,6 @@
  */
 
 (function () {
-    console.log('begin');
-    //notification_test = window.webkitNotifications.createNotification(
-    //    'icon.png', 'Notification Title', 'Notification content...');
-    //notification_test.ondisplay = function () {
-    //
-    //};
-    //notification_test.onclose = function () {
-    //
-    //};
-    //notification_test.show();
-    //Notification.requestPermission(function(status){  //status值有三种：default/granted/denied
-    //    if(Notification.permission !== status){
-    //        Notification.permission = status;
-    //    }
-    //});
 
     //var options = {
     //    dir: "ltr",  //控制方向，据说目前浏览器还不支持
@@ -44,17 +29,62 @@
     //        }
     //    });
     //}
-    console.log(chrome.extension);
-    console.log(chrome.storage);
-    console.log(chrome);
-    chrome.storage.sync.set({
 
-    });
-    console.log($());
-    chrome.notifications.create(null, {
-        type: 'basic',
-        iconUrl: 'img/icon.png',
-        title: '这是标题',
-        message: '您刚才点击了自定义右键菜单！'
+    Notifi = {
+        set: function (k , v, fn) {
+            if ('localStorage' in window) {
+                window.localStorage[k] = v;
+                if(typeof fn === 'function') {
+                    fn(v);
+                }
+            } else  {
+                var options = {};
+                options[k] = v;
+                if(typeof fn === 'function') {
+                    chrome.storage.local.set(options, fn);
+                } else {
+                    chrome.storage.local.set(options);
+                }
+            }
+        },
+        get: function (k, fn) {
+            if ('localStorage' in window) {
+                v = window.localStorage[k];
+                if(typeof fn === 'function') {
+                    fn(v);
+                }
+            } else  {
+                if(typeof fn === 'function') {
+                    chrome.storage.local.get(k, function (data) {
+                        fn.call(data[k]);
+                    });
+                }
+            }
+        }
+    };
+
+
+    function has_tiped() {
+        chrome.storage.local.set({
+            config: {last: 123}
+        });
+    }
+
+    function show(title, body) {
+        var time = /(..)(:..)/.exec(new Date());     // The prettyprinted time.
+        var hour = time[1] % 12 || 12;               // The prettyprinted hour.
+        var period = time[1] < 12 ? 'a.m.' : 'p.m.'; // The period of the day.
+        new Notification(title + hour + time[2] + ' ' + period, {
+            //icon: '48.png',
+            body: body
+        });
+    }
+    c = fetch("http://www.baidu.com");
+    console.log(c);
+    $.get('http://180.76.98.136/api/jx3/info', function (data) {
+        if (data.status) {
+            var info = data.info;
+            show('剑三提醒', '战场:' + info[1] + "人战场" + info[0]);
+        }
     });
 })();

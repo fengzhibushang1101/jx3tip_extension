@@ -16,23 +16,29 @@
     //    "default_icon": "image/icon16.png",
     "default_popup": "html/test.html"
   },
+  "background": {
+    "scripts": [
+      "lib/jquery-3.2.1.min.js",
+      "script/background.js"
+    ]
+  },
   // 引入一个脚本
   "content_scripts": [
     {
       "js": [
         "lib/jquery-3.2.1.min.js",
-        "script/background.js"
+        "script/app.js"
       ],
       // 在什么情况下使用该脚本
       "matches": [
         "http://*/*",
         "https://*/*"
-      ],
+      ]
       // 什么情况下运行【文档加载开始】
-      "run_at": "document_start"
+//      "run_at": "document_start"
     }
   ],
-  // 声明 notifications 权限
+  //声明 notifications 权限
   "permissions": [
     "alarms",
     "tabs",
