@@ -30,44 +30,13 @@
     //    });
     //}
 
-    Notifi = {
-        set: function (k , v, fn) {
-            if ('localStorage' in window) {
-                window.localStorage[k] = v;
-                if(typeof fn === 'function') {
-                    fn(v);
-                }
-            } else  {
-                var options = {};
-                options[k] = v;
-                if(typeof fn === 'function') {
-                    chrome.storage.local.set(options, fn);
-                } else {
-                    chrome.storage.local.set(options);
-                }
-            }
-        },
-        get: function (k, fn) {
-            if ('localStorage' in window) {
-                v = window.localStorage[k];
-                if(typeof fn === 'function') {
-                    fn(v);
-                }
-            } else  {
-                if(typeof fn === 'function') {
-                    chrome.storage.local.get(k, function (data) {
-                        fn.call(data[k]);
-                    });
-                }
-            }
-        }
-    };
-
-
     function has_tiped() {
-        chrome.storage.local.set({
-            config: {last: 123}
-        });
+        var config = localStorage.get("jx3_config");
+        if (!config) return false;
+        var lastTime = config["last_time"];
+    }
+    function is_today(time) {
+
     }
 
     function show(title, body) {
@@ -79,12 +48,12 @@
             body: body
         });
     }
-    c = fetch("http://www.baidu.com");
-    console.log(c);
     $.get('http://180.76.98.136/api/jx3/info', function (data) {
         if (data.status) {
             var info = data.info;
-            show('剑三提醒', '战场:' + info[1] + "人战场" + info[0]);
+            var title = "剑网三每日提醒";
+            var body = '战场:' + info[1] + "人战场" + info[0];
+            show(title, body);
         }
     });
 })();
