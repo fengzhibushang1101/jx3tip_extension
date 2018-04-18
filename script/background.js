@@ -30,13 +30,27 @@
     //    });
     //}
 
-    function has_tiped() {
-        var config = localStorage.get("jx3_config");
-        if (!config) return false;
-        var lastTime = config["last_time"];
+    function has_tipped() {
+        // var config = localStorage.get("jx3_config");
+        // if (!config) return false;
+        var lastTime = localStorage["last_time"];
+        if (lastTime) {
+            return is_today(parseInt(lastTime));
+        } else {
+            return false;
+        }
     }
-    function is_today(time) {
 
+    function is_today(time) {
+        var today_time_range = get_today_range();
+        var min = today_time_range[0];
+        var max = today_time_range[1];
+        return time > min && time < max;
+    }
+
+    function get_today_range() {
+        var now = moment();
+        return [moment(now.format("l")), moment(now.add(1, 'days').format("l"))]
     }
 
     function show(title, body) {
@@ -48,12 +62,17 @@
             body: body
         });
     }
-    $.get('http://180.76.98.136/api/jx3/info', function (data) {
-        if (data.status) {
-            var info = data.info;
-            var title = "剑网三每日提醒";
-            var body = '战场:' + info[1] + "人战场" + info[0];
-            show(title, body);
-        }
-    });
+    
+    if (!has_tipped()) {
+        $.get('http://180.76.98.136/api/jx3/info', function (data) {
+            if (data.status) {
+                var info = data.info;
+                var title = "剑网三每日提醒";
+                var body = '战场:' + info[1] + "人战场" + info[0];
+                show(title, body);
+                localStorage["last_time"] = moment().unix()*1000;
+            }
+        });
+    }
+
 })();
